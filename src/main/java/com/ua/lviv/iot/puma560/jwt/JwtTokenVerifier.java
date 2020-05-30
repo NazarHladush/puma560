@@ -36,8 +36,13 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        Optional<Cookie> jwt = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("JWT")).findFirst();
+        Cookie[] cookies = request.getCookies();
 
+        Optional<Cookie> jwt = Optional.empty();
+
+        if(cookies != null) {
+            jwt = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("JWT")).findFirst();
+        }
         if (jwt.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
