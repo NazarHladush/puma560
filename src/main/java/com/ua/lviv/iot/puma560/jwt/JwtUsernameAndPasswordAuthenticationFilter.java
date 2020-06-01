@@ -67,7 +67,9 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .signWith(secretKey)
                 .compact();
 
-        response.addCookie(new Cookie("JWT",token));
+        Cookie cookie = new Cookie("JWT", token);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 
 }
