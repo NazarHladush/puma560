@@ -2,20 +2,17 @@ package com.ua.lviv.iot.puma560.controller;
 
 import com.ua.lviv.iot.puma560.model.Coordinate;
 import com.ua.lviv.iot.puma560.service.CoordinateService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-public class TestController {
+public class CoordinateController {
 
     final
     CoordinateService coordinateService;
 
-    public TestController(CoordinateService coordinateService) {
+    public CoordinateController(CoordinateService coordinateService) {
         this.coordinateService = coordinateService;
     }
 
@@ -44,5 +41,10 @@ public class TestController {
         Integer coordinateId = Integer.parseInt(coordinate.substring(1));
         coordinateService.setPainted(coordinateId);
         System.out.println(coordinate);
+    }
+
+    @DeleteMapping("/coordinates")
+    public void deleteAllCoordinates() {
+        coordinateService.deleteAllCoordinates();
     }
 }

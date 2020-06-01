@@ -11,4 +11,6 @@ public interface CoordinateService {
     void setPainted(Integer coordinate);
 
     List<String> getByPaintedIsTrue();
+
+    void deleteAllCoordinates();
 }

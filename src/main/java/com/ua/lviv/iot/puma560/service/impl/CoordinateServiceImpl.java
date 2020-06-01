@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,5 +42,12 @@ public class CoordinateServiceImpl implements CoordinateService {
                 .map(coordinate -> "b" + coordinate.getCoordinate())
                 .collect(Collectors.toList());
         return list;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllCoordinates() {
+        List<Coordinate> coordinateByIsPaintedTrue = coordinateRepository.findCoordinateByIsPaintedTrue();
+        coordinateByIsPaintedTrue.stream().forEach(coordinate -> coordinate.setPainted(false));
     }
 }
