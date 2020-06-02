@@ -16,21 +16,6 @@ public class CoordinateController {
         this.coordinateService = coordinateService;
     }
 
-    @GetMapping()
-    public String admsin() {
-        return "HI!";
-    }
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin!";
-    }
-
-    @GetMapping("/user")
-    public String user() {
-        return "user!";
-    }
-
     @GetMapping("/coordinates")
     public List<String> getCoordinates() {
         return coordinateService.getByPaintedIsTrue();
