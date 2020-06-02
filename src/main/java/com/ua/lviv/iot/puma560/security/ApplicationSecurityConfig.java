@@ -1,5 +1,6 @@
 package com.ua.lviv.iot.puma560.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ua.lviv.iot.puma560.jwt.JwtConfig;
 import com.ua.lviv.iot.puma560.jwt.JwtTokenVerifier;
 import com.ua.lviv.iot.puma560.jwt.JwtUsernameAndPasswordAuthenticationFilter;
@@ -31,16 +32,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
     private final SecretKey secretKey;
     private final JwtConfig jwtConfig;
+    private final ObjectMapper objectMapper;
+
 
     @Autowired
     public ApplicationSecurityConfig(PasswordEncoder passwordEncoder,
                                      UserDetailsServiceImpl userDetailsService,
                                      SecretKey secretKey,
-                                     JwtConfig jwtConfig) {
+                                     JwtConfig jwtConfig, ObjectMapper objectMapper) {
         this.passwordEncoder = passwordEncoder;
         this.userDetailsService = userDetailsService;
         this.secretKey = secretKey;
         this.jwtConfig = jwtConfig;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -64,7 +68,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey, objectMapper))
                 .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/", "index", "/css/*", "/js/*", "/coordinates").permitAll()

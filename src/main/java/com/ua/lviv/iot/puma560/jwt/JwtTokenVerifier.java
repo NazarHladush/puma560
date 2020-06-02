@@ -1,5 +1,6 @@
 package com.ua.lviv.iot.puma560.jwt;
 
+import com.google.common.base.Strings;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -36,19 +37,14 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        Cookie[] cookies = request.getCookies();
+        String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader());
 
-        Optional<Cookie> jwt = Optional.empty();
-
-        if(cookies != null) {
-            jwt = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("JWT")).findFirst();
-        }
-        if (jwt.isEmpty()) {
+        if (Strings.isNullOrEmpty(authorizationHeader) || !authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = jwt.get().getValue();
+        String token = authorizationHeader.replace(jwtConfig.getTokenPrefix(), "");
 
         try {
 
@@ -75,9 +71,6 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (JwtException e) {
-            Cookie cookie = new Cookie("JWT", "");
-            cookie.setMaxAge(0);
-            response.addCookie(cookie);
             throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
         }
 

@@ -11,25 +11,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
+    private final ObjectMapper objectMapper;
 
     public JwtUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager,
                                                       JwtConfig jwtConfig,
-                                                      SecretKey secretKey) {
+                                                      SecretKey secretKey, ObjectMapper objectMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtConfig = jwtConfig;
         this.secretKey = secretKey;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -67,9 +70,14 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .signWith(secretKey)
                 .compact();
 
-        Cookie cookie = new Cookie("JWT", token);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        Map<String, String> authorization = new HashMap<>();
+        authorization.put("Authorization",jwtConfig.getTokenPrefix() + token);
+        String jsonResult = objectMapper.writerWithDefaultPrettyPrinter()
+                .writeValueAsString(authorization);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().print(jsonResult);
+
     }
 
 }
