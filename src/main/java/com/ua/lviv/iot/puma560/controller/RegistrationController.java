@@ -28,8 +28,4 @@ public class RegistrationController {
         return HttpStatus.OK;
     }
 
-    @GetMapping
-    public User registrdation() {
-        return new User();
-    }
 }
